@@ -1,12 +1,10 @@
 /***
  assignment1.cpp
  Assignment-1: Cartoonify
-
  Name: Patterson, Joshua
-
- Project Summary: A short paragraph (3-4 sentences) describing the work you
- did for the project: e.g. did you use the Chaikin's or Bezier's algorithm?
- Did you take an iterative or recursive approach?
+ Project Summary: I have used Chaikins algorithm to cartoonify a headshot of comedian Dave Chappelle.
+ I used an iterative approach to handle the functions. I also used desmos.com as a tool to find proper vertex points.
+ I sectioned off multiple aspects of the face to have more defined features (left eyelid, right eyelid, left nose, right nose, etc.)
  ***/
 
 
@@ -39,44 +37,53 @@ void setup() {
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
-vector<Vertex> generate_points(vector<Vertex> control_points) {
+//~~~~~~~~~~~~~~~~GENERATE CHAILKIN~~~~~~~~~~~~~~~~~~~~~~//
+
+vector<Vertex> generate_points(vector<Vertex> control) {
     vector<Vertex> points;
-    points.push_back(control_points.at(0));
-    for(int i = 0; i < (control_points.size()-1); i++) {
-        float delta_x = control_points[i+1].get_x() - control_points[i].get_x();
-        float delta_y = control_points[i+1].get_y() - control_points[i].get_y();
-        Vertex quarter_point = Vertex(control_points[i].get_x() + delta_x * 0.25, control_points[i].get_y() + delta_y * 0.25);
-        Vertex three_quarter_point = Vertex(control_points[i].get_x() + delta_x * 0.75, control_points[i].get_y() + delta_y * 0.75);
-        points.push_back(quarter_point);
-        points.push_back(three_quarter_point);
+    points.push_back(control.at(0));
+    for(int i = 0; i < (control.size()-1); i++) {
+        float deltax = control[i+1].get_x() - control[i].get_x();
+        float deltay = control[i+1].get_y() - control[i].get_y();
+        Vertex three_quarter = Vertex(control[i].get_x() + deltax * 0.75, control[i].get_y() + deltay * 0.75);
+        //Vertex four_quarter = Vertex(control[i].get_x() + deltax * 1, control[i].get_y() + deltay * 1);
+        Vertex quarter = Vertex(control[i].get_x() + deltax * 0.25, control[i].get_y() + deltay * 0.25);
+       // points.push_back(four_quarter);
+        points.push_back(quarter);
+        points.push_back(three_quarter);
     }
-    points.push_back(control_points.back());
+    points.push_back(control.back());
     return points;
 }
 
-void draw_curve(vector<Vertex> control_points, int n_iter) {
-    vector<Vertex> draw_points;
-    draw_points = control_points;
+
+//~~~~~~~~~~~~~~DRAW CHAILKIN~~~~~~~~~~~~~~~~~~~~~~//
+
+void draw_curve(vector<Vertex> control, int n_iter) {
+    vector<Vertex> draw;
+    draw = control;
     for(int i = 0; i < n_iter; i++) {
-        draw_points = generate_points(draw_points);
+        draw = generate_points(draw);
     }
     glBegin(GL_LINES);
-    for(int i = 0; i < draw_points.size()-1; i++) {
-        glVertex2f(draw_points.at(i).get_x(), draw_points.at(i).get_y());
-        glVertex2f(draw_points.at(i+1).get_x(), draw_points.at(i+1).get_y());
+    for(int i = 0; i < draw.size()-1; i++) {
+        glVertex2f(draw.at(i).get_x(), draw.at(i).get_y());
+        glVertex2f(draw.at(i+1).get_x(), draw.at(i+1).get_y());
     }
     glEnd();
 }
 
+
+//~~~~~~~~~~~~~~CONNECT POINTS~~~~~~~~~~~~~~~~~~~~//
+
 void display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    // Set our color to black (R, G, B)
     glColor3f(0.0f, 0.0f, 0.0f);
     
     vector<Vertex> toprighthead =
     { Vertex(0.0f, 0.55f),
-      Vertex(0.1f, 0.54f),
-      Vertex(0.239f, 0.492f),
+        Vertex(0.1f, 0.54f),
+        Vertex(0.239f, 0.492f),
         Vertex(0.368f, 0.407f),
         Vertex(0.415f, 0.332f),
         Vertex(0.454f, 0.221f),
@@ -85,7 +92,7 @@ void display() {
         Vertex(0.462f, 0.153f),
         Vertex(0.459f, 0.139f)};
     
-   vector<Vertex> toplefthead =
+    vector<Vertex> toplefthead =
     { Vertex(0.0f, 0.55f),
         Vertex(-0.1f, 0.54f),
         Vertex(-0.239f, 0.492f),
@@ -108,7 +115,8 @@ void display() {
         Vertex(0.466f, -0.175f),
         Vertex(0.458f, -0.14f),
         Vertex(0.452f, -0.106f),
-      };
+    };
+    
     vector<Vertex> botlefthead = {
         Vertex(0.0f, -0.55f),
         Vertex(-0.1f, -0.54f),
@@ -121,8 +129,9 @@ void display() {
         Vertex(-0.458f, -0.14f),
         Vertex(-0.452f, -0.106f),
     };
+    
     vector<Vertex> leftear = {
-       Vertex(-0.459f, 0.133f),
+        Vertex(-0.459f, 0.133f),
         Vertex(-0.477f, 0.151f),
         Vertex(-0.508f, 0.15f),
         Vertex(-0.497f, 0.085f),
@@ -132,6 +141,7 @@ void display() {
         Vertex(-0.473f, -0.084f),
         Vertex(-0.451f, -0.116f),
     };
+    
     vector<Vertex> rightear = {
         Vertex(0.459f, 0.133f),
         Vertex(0.477f, 0.151f),
@@ -143,6 +153,46 @@ void display() {
         Vertex(0.473f, -0.084f),
         Vertex(0.451f, -0.116f),
     };
+    
+    vector <Vertex> lefteyebrow = {
+        Vertex(-0.095f, 0.159f),
+        Vertex(-0.215f, 0.182f),
+        Vertex(-0.335f, 0.1755f),
+        Vertex(-0.325f, 0.204f),
+        Vertex(-0.265f, 0.214f),
+        Vertex(-0.095f, 0.159f),
+        
+    };
+    
+    vector <Vertex> righteyebrow = {
+        Vertex(0.095f, 0.159f),
+        Vertex(0.265f, 0.214f),
+        Vertex(0.325f, 0.204f),
+        Vertex(0.335f, 0.1755f),
+
+        Vertex(0.215f, 0.182f),
+        Vertex(0.095f, 0.159f),
+        
+    };
+    
+    vector <Vertex> lefteyelid = {
+        Vertex(-0.119f, 0.096f),
+        Vertex(-0.135f, 0.12f),
+        Vertex(-0.188f, 0.148f),
+        Vertex(-0.249f, 0.15f),
+        Vertex(-0.312f, 0.139f),
+        Vertex(-0.333f, 0.092f),
+    };
+    
+    vector <Vertex> righteyelid = {
+        Vertex(0.119f, 0.096f),
+        Vertex(0.135f, 0.12f),
+        Vertex(0.188f, 0.148f),
+        Vertex(0.249f, 0.15f),
+        Vertex(0.312f, 0.139f),
+        Vertex(0.333f, 0.092f),
+    };
+    
     vector <Vertex> toplefteye = {
         Vertex(-0.119f, 0.096f),
         Vertex(-0.172f, 0.119f),
@@ -156,22 +206,6 @@ void display() {
         Vertex(-0.119f, 0.096f),
     };
     
-    
-    
-    vector <Vertex> lefteyebrow = {
-        Vertex(-0.095f, 0.159f),
-        Vertex(-0.215f, 0.182f),
-        Vertex(-0.335f, 0.1755f),
-  
-    };
-    
-    vector <Vertex> righteyebrow = {
-        Vertex(0.095f, 0.159f),
-        Vertex(0.215f, 0.182f),
-        Vertex(0.335f, 0.1755f),
-        
-    };
-
     vector <Vertex> toprighteye = {
         Vertex(0.119f, 0.096f),
         Vertex(0.172f, 0.119f),
@@ -185,6 +219,24 @@ void display() {
         Vertex(0.119f, 0.096f),
     };
     
+    vector <Vertex> lefteyeball = {
+        Vertex(-0.185f, 0.084f),
+        Vertex(-0.224f, 0.07f),
+        Vertex(-0.275f, 0.081f),
+        Vertex(-0.242f, 0.106f),
+        Vertex(-0.215f, 0.12f),
+        Vertex(-0.185f, 0.084f),
+    };
+    
+    vector <Vertex> righteyeball = {
+        Vertex(0.185f, 0.084f),
+        Vertex(0.224f, 0.07f),
+        Vertex(0.275f, 0.081f),
+        Vertex(0.242f, 0.106f),
+        Vertex(0.215f, 0.12f),
+        Vertex(0.185f, 0.084f),
+    };
+    
     vector<Vertex> leftnose =
     {
         Vertex(-0.089f, -0.018f),
@@ -195,10 +247,7 @@ void display() {
         Vertex(-0.064f, -0.085f),
         Vertex(-0.023f, -0.106f),
         Vertex(0.004f, -0.109f),
-        
-        
     };
-    
     
     vector<Vertex> rightnose =
     {
@@ -210,14 +259,12 @@ void display() {
         Vertex(0.064f, -0.085f),
         Vertex(0.023f, -0.106f),
         Vertex(0.004f, -0.109f),
-        
-        
     };
     
     
     vector<Vertex> toplip =
     {
-        Vertex(0.001, -0.2),
+        Vertex(0.001f, -0.2f),
         Vertex(-0.038f, -0.185f),
         Vertex(-0.13f, -0.2f),
         Vertex(-0.18f, -0.234f),
@@ -225,16 +272,12 @@ void display() {
         Vertex(0.18f, -0.234f),
         Vertex(0.13f, -0.2f),
         Vertex(0.038f, -0.185f),
-        Vertex(0.001, -0.2),
-
-        
-        
-        
+        Vertex(0.001f, -0.2f),
     };
     
     vector<Vertex> bottomlip =
     {
-        Vertex(0.001, -0.245),
+        Vertex(0.001f, -0.245f),
         Vertex(-0.038f, -0.245f),
         Vertex(-0.13f, -0.238f),
         Vertex(-0.144f, -0.296f),
@@ -244,42 +287,52 @@ void display() {
         Vertex(0.144f, -0.296f),
         Vertex(0.13f, -0.238f),
         Vertex(0.038f, -0.245f),
-        Vertex(0.001, -0.245),
-        
-        
-        
-        
-        
-        
+        Vertex(0.001f, -0.245f),
     };
     
     
+    vector<Vertex> leftstressmark =
+    {
+        Vertex(-0.086f, 0.074f),
+        Vertex(-0.169f, 0.017f),
+        Vertex(-0.23f, 0.007f),
+    };
     
+    vector<Vertex> rightstressmark =
+    {
+        Vertex(0.086f, 0.074f),
+        Vertex(0.169f, 0.017f),
+        Vertex(0.23f, 0.007f),
+    };
     
+    draw_curve(toprighthead, 4);
+    draw_curve(toplefthead, 4);
+    draw_curve(botrighthead, 4);
+    draw_curve(botlefthead, 4);
+    draw_curve(leftear, 4);
+    draw_curve(rightear, 4);
+    draw_curve(toplefteye,4);
+    draw_curve(toprighteye,4);
+    draw_curve(leftnose,4);
+    draw_curve(rightnose, 4);
+    draw_curve(lefteyebrow, 4);
+    draw_curve(righteyebrow, 4);
+    draw_curve(toplip, 4);
+    draw_curve(bottomlip, 4);
+    draw_curve(lefteyeball, 4);
+    draw_curve(righteyeball, 4);
+    draw_curve(lefteyelid, 4);
+    draw_curve(righteyelid, 4);
+    draw_curve(leftstressmark, 4);
+    draw_curve(rightstressmark, 4);
     
-    draw_curve(toprighthead, 10);
-    draw_curve(toplefthead, 10);
-    draw_curve(botrighthead, 10);
-    draw_curve(botlefthead, 10);
-    draw_curve(leftear, 10);
-    draw_curve(rightear, 10);
-    draw_curve(toplefteye,10);
-    draw_curve(toprighteye,10);
-    draw_curve(leftnose,10);
-    draw_curve(rightnose, 10);
-    draw_curve(lefteyebrow, 10);
-    draw_curve(righteyebrow, 10);
-    draw_curve(toplip, 10);
-    draw_curve(bottomlip, 10);
     glutSwapBuffers();
 }
-
-
 
 int main(int argc, char *argv[]) {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
-    glutInitWindowSize(800,800); // Set your own window size
+    glutInitWindowSize(800,900); // Set your own window size
     glutCreateWindow("Assignment 1");
     setup();
     glutDisplayFunc(display);
