@@ -2,11 +2,11 @@
  assignment1.cpp
  Assignment-1: Cartoonify
  Name: Patterson, Joshua
+ Collaborators: Tolliver, Moriah; Richardson, Alex
  Project Summary: I have used Chaikins algorithm to cartoonify a headshot of comedian Dave Chappelle.
  I used an iterative approach to handle the functions. I also used desmos.com as a tool to find proper vertex points.
  I sectioned off multiple aspects of the face to have more defined features (left eyelid, right eyelid, left nose, right nose, etc.)
  ***/
-
 
 #ifdef __APPLE__
 #include <OpenGL/gl.h>
@@ -21,6 +21,7 @@
 #include <iostream>
 #define GL_SILENCE_DEPRECATION
 using namespace std;
+
 class Vertex {
     GLfloat x, y;
 public:
@@ -37,38 +38,38 @@ void setup() {
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
-//~~~~~~~~~~~~~~~~GENERATE CHAILKIN~~~~~~~~~~~~~~~~~~~~~~//
+//~~~~~~~~~~~~~~~~GENERATE CHAIKIN~~~~~~~~~~~~~~~~~~~~~~//
 
-vector<Vertex> generate_points(vector<Vertex> control) {
+vector<Vertex> generate_points(vector<Vertex> control_points) {
     vector<Vertex> points;
-    points.push_back(control.at(0));
-    for(int i = 0; i < (control.size()-1); i++) {
-        float deltax = control[i+1].get_x() - control[i].get_x();
-        float deltay = control[i+1].get_y() - control[i].get_y();
-        Vertex three_quarter = Vertex(control[i].get_x() + deltax * 0.75, control[i].get_y() + deltay * 0.75);
-        //Vertex four_quarter = Vertex(control[i].get_x() + deltax * 1, control[i].get_y() + deltay * 1);
-        Vertex quarter = Vertex(control[i].get_x() + deltax * 0.25, control[i].get_y() + deltay * 0.25);
-       // points.push_back(four_quarter);
+    points.push_back(control_points.at(0));
+    for(int k = 0; (control_points.size()-1) > k; k++) {
+        float deltax = control_points[k+1].get_x() - control_points[k].get_x();
+        float deltay = control_points[k+1].get_y() - control_points[k].get_y();
+        Vertex three_quarter = Vertex(control_points[k].get_x() + deltax * 0.75, control_points[k].get_y() + deltay * 0.75);
+        //Vertex four_quarter = Vertex(control[k].get_x() + deltax * 1, control[k].get_y() + deltay * 1);
+        Vertex quarter = Vertex(control_points[k].get_x() + deltax * 0.25, control_points[k].get_y() + deltay * 0.25);
+        // points.push_back(four_quarter);
         points.push_back(quarter);
         points.push_back(three_quarter);
     }
-    points.push_back(control.back());
+    points.push_back(control_points.back());
     return points;
 }
 
 
 //~~~~~~~~~~~~~~DRAW CHAILKIN~~~~~~~~~~~~~~~~~~~~~~//
 
-void draw_curve(vector<Vertex> control, int n_iter) {
+void draw_curve(vector<Vertex> control_points, int n_iter) {
     vector<Vertex> draw;
-    draw = control;
-    for(int i = 0; i < n_iter; i++) {
+    draw = control_points;
+    for(int k = 0; n_iter > k; k++) {
         draw = generate_points(draw);
     }
     glBegin(GL_LINES);
-    for(int i = 0; i < draw.size()-1; i++) {
-        glVertex2f(draw.at(i).get_x(), draw.at(i).get_y());
-        glVertex2f(draw.at(i+1).get_x(), draw.at(i+1).get_y());
+    for(int k = 0; draw.size()-1 > k; k++) {
+        glVertex2f(draw.at(k).get_x(), draw.at(k).get_y());
+        glVertex2f(draw.at(k+1).get_x(), draw.at(k+1).get_y());
     }
     glEnd();
 }
@@ -169,7 +170,7 @@ void display() {
         Vertex(0.265f, 0.214f),
         Vertex(0.325f, 0.204f),
         Vertex(0.335f, 0.1755f),
-
+        
         Vertex(0.215f, 0.182f),
         Vertex(0.095f, 0.159f),
         
