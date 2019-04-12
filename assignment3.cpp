@@ -31,19 +31,22 @@
 #include <vector>
 using namespace std;
 
-
 // If a float is < EPSILON or > -EPILSON then it should be 0
 float EPSILON = 0.000001;
 // theta is the angle to rotate the scene
-float theta = 0.0;
+float THETA = 0.0;
 // Vector placeholders for the scene and color array
 vector<GLfloat> SCENE;
 vector<GLfloat> COLOR;
 
-// Converts degrees to radians for rotation
-float deg2rad(float d) {
-    return (d*M_PI)/180.0;
-}
+/**************************************************
+ *  Rectangular Prisms via Hierarchical Modeling  *
+ *                                                *
+ *  using planes as building blocks, build a unit *
+ *  cube with transformations that will serve as  *
+ *  a primitive for modeling objects in the scene *
+ *                                                *
+ *************************************************/
 
 // Initializes a square plane of unit lengths
 vector<GLfloat> init_plane() {
@@ -56,6 +59,12 @@ vector<GLfloat> init_plane() {
     return vertices;
 }
 
+// Converts degrees to radians for rotation
+float deg2rad(float d) {
+    return (d*M_PI) / 180.0;
+}
+
+
 
 // Converts a vector to an array
 GLfloat* vector2array(vector<GLfloat> vec) {
@@ -67,32 +76,27 @@ GLfloat* vector2array(vector<GLfloat> vec) {
 }
 
 // Converts Cartesian coordinates to homogeneous coordinates
-vector<GLfloat> to_homogenous_coord(vector<GLfloat> cartesian_coords) {
+vector<GLfloat> to_homogeneous_coord(vector<GLfloat> cartesian_coords) {
     vector<GLfloat> result;
-    int j = 0;
-    for ( int i = 0; i < cartesian_coords.size(); i++ ) {
-        if ( (j + 1) % 4 == 0 ) {
-            result.push_back(1);
-            j++;
+    for (int i = 0; i < cartesian_coords.size(); i++) {
+        result.push_back(cartesian_coords[i]);
+        if ((i+1) % 3 == 0) {
+            result.push_back(1.0);
         }
-        result.push_back( cartesian_coords[i] );
-        j++;
     }
-    result.push_back(1);
     return result;
 }
 
-// Converts Homogenous coordinates to cartesian coordinates
-vector<GLfloat> to_cartesian_coord(vector<GLfloat> homogenous_coords) {
+// Converts Cartesian coordinates to homogeneous coordinates
+vector<GLfloat> to_cartesian_coord(vector<GLfloat> homogeneous_coords) {
     vector<GLfloat> result;
-    GLfloat* cartesian = vector2array(homogenous_coords);
-    long size = homogenous_coords.size()-1;
-    for(int i = 0; i< size; i++) {
-        if(i > 0 & (i + 1) % 4 == 0) {
-            i++;
-        };
-        result.push_back(cartesian[i]);
-    };
+    for (int i = 0; i < homogeneous_coords.size(); i++) {
+        if ((i+1) % 4 == 0) {
+            continue;
+        } else {
+            result.push_back(homogeneous_coords[i]);
+        }
+    }
     return result;
 }
 
@@ -178,7 +182,6 @@ vector<GLfloat> mat_mult(vector<GLfloat> A, vector<GLfloat> B) {
     }
     return result;
 }
-
 ////////////////////////////////////////////////////////////
 // Builds a unit cube centered at the origin
 vector<GLfloat> build_cube() {
@@ -191,7 +194,7 @@ vector<GLfloat> build_cube() {
     vector<GLfloat> top;
     vector<GLfloat> bottom;
     
-    plane = to_homogenous_coord(init_plane());
+    plane = to_homogeneous_coord(init_plane());
     
     front = mat_mult(translation_matrix(0.0, 0.0, 0.5), plane);
     left = mat_mult(rotation_matrix_y(-90.0), plane);
@@ -225,15 +228,6 @@ vector<GLfloat> build_cube() {
 
 ////////////////////////////////////////////////////////////
 
-/**************************************************
- *            Camera and World Modeling           *
- *                                                *
- *  create a scene by applying transformations to *
- *  the objects built from planes and position    *
- *  the camera to view the scene by setting       *
- *  the projection/viewing matrices               *
- *                                                *
- *************************************************/
 
 void setup() {
     // Enable the vertex array functionality
@@ -255,7 +249,7 @@ void init_camera() {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     // Define a 50 degree field of view, 1:1 aspect ratio, near and far planes at 3 and 7
-    gluPerspective(100.0, 1.0, 2.0, 30.0);
+    gluPerspective(65.0, 1.0, 2.0, 30.0);
     // Position camera at (2, 3, 5), attention at (0, 0, 0), up at (0, 1, 0)
     gluLookAt(4.0, 3.0, 6.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
 }
@@ -276,7 +270,7 @@ vector<GLfloat> init_scene() {
     vector<GLfloat> table_base;
     vector<GLfloat> tabletop;
     
-    homog_plane = to_homogenous_coord(build_cube());
+    homog_plane = to_homogeneous_coord(build_cube());
     
     // Scaling and Translating the points
     couch_cushion = mat_mult(scaling_matrix(1.5, 0.5, 1.0), homog_plane);
@@ -299,6 +293,7 @@ vector<GLfloat> init_scene() {
     lampshade = mat_mult(scaling_matrix(1.0, 0.75, 1.0), homog_plane);
     lampshade = mat_mult(translation_matrix(-2.0, 2.75, 0.0), lampshade);
     
+
     // Cartesian
     couch_cushion = to_cartesian_coord(couch_cushion);
     rt_couch_cushion = to_cartesian_coord(rt_couch_cushion);
@@ -324,8 +319,6 @@ vector<GLfloat> init_scene() {
     scene.insert(scene.end(), lampshade.begin(), lampshade.end());
     return scene;
 }
-////////////////////////////////////////////////////////////
-
 
 ////////////////////////////////////////////////////////////
 // Construct the color mapping of the scene
@@ -338,7 +331,6 @@ vector<GLfloat> init_color(vector<GLfloat> scene) {
 }
 ////////////////////////////////////////////////////////////
 
-
 void display_func() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
@@ -347,14 +339,13 @@ void display_func() {
     glLoadIdentity();
     
     //ROTATIONS
-    vector<GLfloat> pointValues = to_homogenous_coord(init_scene());
-    pointValues = mat_mult(rotation_matrix_y(theta), pointValues);
+    vector<GLfloat> pointValues = to_homogeneous_coord(init_scene());
+    pointValues = mat_mult(rotation_matrix_y(THETA), pointValues);
     SCENE = to_cartesian_coord(pointValues);
     
     //vector<GLfloat> xyzPoints;
     //vector<GLfloat> matValue;
     //vector<GLfloat> multResult;
-
     
     GLfloat* pointColor = vector2array(COLOR);
     GLfloat* pointScene = vector2array(SCENE);
@@ -364,34 +355,35 @@ void display_func() {
                     0,          // Start position in referenced memory
                     pointScene);  // Pointer to memory location to read from
     
-    //pass the color pointer
     glColorPointer(3,           // 3 components (r, g, b)
                    GL_FLOAT,    // Vertex type is GL_FLOAT
                    0,           // Start position in referenced memory
                    pointColor);     // Pointer to memory location to read from
     
     // Draw quad point planes: each 4 vertices
-    glDrawArrays(GL_QUADS, 0, 4*6);
+    glDrawArrays(GL_QUADS, 0, 4 * 60);
+    
     glFlush();            //Finish rendering
     glutSwapBuffers();
 }
 
 void idle_func() {
-    theta = theta+0.03;
+    THETA = THETA + 0.03;
     display_func();
 }
 
 int main (int argc, char **argv) {
-    //Initialize GLUT
+    // Initialize GLUT
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
     glutInitWindowSize(800, 600);
     // Create a window with rendering context and everything else we need
-    glutCreateWindow("Assignment 3 Joshua Patterson");
+    glutCreateWindow("Assignment 3");
     
     setup();
     init_camera();
-    SCENE= init_scene();
+    // Setting global variables SCENE and COLOR with actual values
+    SCENE = init_scene();
     COLOR = init_color(SCENE);
     
     // Set up our display function
@@ -399,5 +391,10 @@ int main (int argc, char **argv) {
     glutIdleFunc(idle_func);
     // Render our world
     glutMainLoop();
+    
+    // Remember to call "delete" on your dynmically allocated arrays
+    // such that you don't suffer from memory leaks. e.g.
+    // delete arr;
+    
     return 0;
 }
