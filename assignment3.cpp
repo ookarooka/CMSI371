@@ -48,6 +48,20 @@ vector<GLfloat> COLOR;
  *                                                *
  *************************************************/
 
+// Converts degrees to radians for rotation
+float deg2rad(float d) {
+    return (d*M_PI) / 180.0;
+}
+
+// Converts a vector to an array
+GLfloat* vector2array(vector<GLfloat> vec) {
+    GLfloat* arr = new GLfloat[vec.size()];
+    for (int i = 0; i < vec.size(); i++) {
+        arr[i] = vec[i];
+    }
+    return arr;
+}
+
 // Initializes a square plane of unit lengths
 vector<GLfloat> init_plane() {
     vector<GLfloat> vertices = {
@@ -57,22 +71,6 @@ vector<GLfloat> init_plane() {
         +0.5,   -0.5,   +0.0
     };
     return vertices;
-}
-
-// Converts degrees to radians for rotation
-float deg2rad(float d) {
-    return (d*M_PI) / 180.0;
-}
-
-
-
-// Converts a vector to an array
-GLfloat* vector2array(vector<GLfloat> vec) {
-    GLfloat* arr = new GLfloat[vec.size()];
-    for (int i = 0; i < vec.size(); i++) {
-        arr[i] = vec[i];
-    }
-    return arr;
 }
 
 // Converts Cartesian coordinates to homogeneous coordinates
@@ -293,7 +291,7 @@ vector<GLfloat> init_scene() {
     lampshade = mat_mult(scaling_matrix(1.0, 0.75, 1.0), homog_plane);
     lampshade = mat_mult(translation_matrix(-2.0, 2.75, 0.0), lampshade);
     
-
+    
     // Cartesian
     couch_cushion = to_cartesian_coord(couch_cushion);
     rt_couch_cushion = to_cartesian_coord(rt_couch_cushion);
@@ -398,3 +396,4 @@ int main (int argc, char **argv) {
     
     return 0;
 }
+
