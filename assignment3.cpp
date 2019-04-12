@@ -48,12 +48,10 @@ vector<GLfloat> COLOR;
  *                                                *
  *************************************************/
 
-// Converts degrees to radians for rotation
 float deg2rad(float d) {
     return (d*M_PI) / 180.0;
 }
 
-// Converts a vector to an array
 GLfloat* vector2array(vector<GLfloat> vec) {
     GLfloat* arr = new GLfloat[vec.size()];
     for (int i = 0; i < vec.size(); i++) {
@@ -62,7 +60,6 @@ GLfloat* vector2array(vector<GLfloat> vec) {
     return arr;
 }
 
-// Initializes a square plane of unit lengths
 vector<GLfloat> init_plane() {
     vector<GLfloat> vertices = {
         +0.5,   +0.5,   +0.0,
@@ -73,7 +70,6 @@ vector<GLfloat> init_plane() {
     return vertices;
 }
 
-// Converts Cartesian coordinates to homogeneous coordinates
 vector<GLfloat> to_homogeneous_coord(vector<GLfloat> cartesian_coords) {
     vector<GLfloat> result;
     for (int i = 0; i < cartesian_coords.size(); i++) {
@@ -85,7 +81,6 @@ vector<GLfloat> to_homogeneous_coord(vector<GLfloat> cartesian_coords) {
     return result;
 }
 
-// Converts Cartesian coordinates to homogeneous coordinates
 vector<GLfloat> to_cartesian_coord(vector<GLfloat> homogeneous_coords) {
     vector<GLfloat> result;
     for (int i = 0; i < homogeneous_coords.size(); i++) {
@@ -98,7 +93,6 @@ vector<GLfloat> to_cartesian_coord(vector<GLfloat> homogeneous_coords) {
     return result;
 }
 
-// Definition of a translation matrix
 vector<GLfloat> translation_matrix (float dx, float dy, float dz) {
     vector<GLfloat> translate_mat;
     translate_mat = {
@@ -110,7 +104,6 @@ vector<GLfloat> translation_matrix (float dx, float dy, float dz) {
     return translate_mat;
 }
 
-// Definition of a scaling matrix
 vector<GLfloat> scaling_matrix (float sx, float sy, float sz) {
     vector<GLfloat> scale_mat;
     scale_mat = {
@@ -122,7 +115,6 @@ vector<GLfloat> scaling_matrix (float sx, float sy, float sz) {
     return scale_mat;
 }
 
-// Definition of a rotation matrix about the x-axis theta degrees
 vector<GLfloat> rotation_matrix_x (float theta) {
     vector<GLfloat> rotate_mat_x;
     theta = deg2rad(theta);
@@ -135,7 +127,6 @@ vector<GLfloat> rotation_matrix_x (float theta) {
     return rotate_mat_x;
 }
 
-// Definition of a rotation matrix about the y-axis by theta degrees
 vector<GLfloat> rotation_matrix_y (float theta) {
     vector<GLfloat> rotate_mat_y;
     theta = deg2rad(theta);
@@ -148,7 +139,6 @@ vector<GLfloat> rotation_matrix_y (float theta) {
     return rotate_mat_y;
 }
 
-// Definition of a rotation matrix about the z-axis by theta degrees
 vector<GLfloat> rotation_matrix_z (float theta) {
     vector<GLfloat> rotate_mat_z;
     theta = deg2rad(theta);
@@ -161,7 +151,6 @@ vector<GLfloat> rotation_matrix_z (float theta) {
     return rotate_mat_z;
 }
 
-// Perform matrix multiplication for A B
 vector<GLfloat> mat_mult(vector<GLfloat> A, vector<GLfloat> B) {
     vector<GLfloat> result;
     // TODO: Compute matrix multiplication of A B
@@ -180,76 +169,62 @@ vector<GLfloat> mat_mult(vector<GLfloat> A, vector<GLfloat> B) {
     }
     return result;
 }
-////////////////////////////////////////////////////////////
-// Builds a unit cube centered at the origin
+
 vector<GLfloat> build_cube() {
     vector<GLfloat> result;
     vector<GLfloat> cubePlane;
-    cubePlane = to_homogeneous_coord(init_plane());
-    
     vector<GLfloat> cubeFace;
-    vector<GLfloat> cubeBack;
     vector<GLfloat> cubeLeftSide;
     vector<GLfloat> cubeRightSide;
+    vector<GLfloat> cubeBack;
     vector<GLfloat> cubeHead;
     vector<GLfloat> cubeGround;
     
-    vector<GLfloat> insertFace;
-    vector<GLfloat> insertBack;
-    vector<GLfloat> insertLeftSide;
-    vector<GLfloat> insertRightSide;
-    vector<GLfloat> insertHead;
-    vector<GLfloat> insertGround;
+
+    
+    cubePlane = to_homogeneous_coord(init_plane());
+    
+    cubeFace = mat_mult(translation_matrix(0,0,0.5), cubePlane);
+    cubeBack =
+    mat_mult(translation_matrix(0,0,-0.5), cubeBack);
+    cubeLeftSide =
+    mat_mult(translation_matrix(-0.5,0,0), cubeLeftSide);
+    cubeRightSide =
+    mat_mult(translation_matrix(0.5,0,0), cubeRightSide);
+    cubeHead =
+    mat_mult(translation_matrix(0,0.5,0), cubeHead);
+    cubeGround =
+    mat_mult(translation_matrix(0,-0.5,0), cubeGround);
+    
+    //rotations
+    cubeBack =
+    mat_mult(rotation_matrix_y(deg2rad(180)), cubePlane);
+    cubeLeftSide =
+    mat_mult(rotation_matrix_y(deg2rad(-90)), cubePlane);
+    cubeRightSide =
+    mat_mult(rotation_matrix_y(deg2rad(90)), cubePlane);
+    cubeHead =
+    mat_mult(rotation_matrix_x(deg2rad(-90)), cubePlane);
+    cubeGround =
+    mat_mult(rotation_matrix_x(deg2rad(90)), cubePlane);
+    
+    
+    cubeFace = to_cartesian_coord(cubeFace);
+    cubeLeftSide = to_cartesian_coord(cubeLeftSide);
+    cubeRightSide = to_cartesian_coord(cubeRightSide);
+    cubeBack = to_cartesian_coord(cubeBack);
+    cubeHead = to_cartesian_coord(cubeHead);
+    cubeGround = to_cartesian_coord(cubeGround);
     
     result.insert(result.end(), cubeFace.begin(), cubeFace.end());
     result.insert(result.end(), cubeLeftSide.begin(), cubeLeftSide.end());
     result.insert(result.end(), cubeRightSide.begin(), cubeRightSide.end());
     result.insert(result.end(), cubeBack.begin(), cubeBack.end());
     result.insert(result.end(), cubeHead.begin(), cubeHead.end());
-        result.insert(result.end(), cubeGround.begin(), cubeGround.end());
-    
-    
-    cubeFace = to_cartesian_coord(cubeFace);
-    cubeBack = to_cartesian_coord(cubeBack);
-    cubeLeftSide = to_cartesian_coord(cubeLeftSide);
-    cubeRightSide = to_cartesian_coord(cubeRightSide);
-    cubeHead = to_cartesian_coord(cubeHead);
-    cubeGround = to_cartesian_coord(cubeGround);
-    
-    
-//translations
-    cubeFace = mat_mult(translation_matrix(0,0,0.5), cubePlane);
-    cubeBack =
-        mat_mult(translation_matrix(0,0,0.5), cubeBack);
-    cubeLeftSide =
-    mat_mult(translation_matrix(-0.5,0,0), cubeLeftSide);
-    cubeRightSide =
-    mat_mult(translation_matrix(0.5,0,0), cubeRightSide);
-    cubeHead =
-    mat_mult(translation_matrix(0,0.5,0), cubeRightSide);
-    cubeGround =
-    mat_mult(translation_matrix(0,-0.5,0), cubeGround);
-    
-    //rotations
-    cubeBack =
-    mat_mult(rotation_matrix_y(180), cubePlane);
-    cubeLeftSide =
-    mat_mult(rotation_matrix_y(-90), cubePlane);
-    cubeRightSide =
-    mat_mult(rotation_matrix_y(90), cubePlane);
-    cubeHead =
-    mat_mult(rotation_matrix_y(-90), cubePlane);
-    cubeGround =
-    mat_mult(rotation_matrix_y(90), cubePlane);
-   
-    
-    
+    result.insert(result.end(), cubeGround.begin(), cubeGround.end());
     
     return result;
 }
-
-////////////////////////////////////////////////////////////
-
 
 void setup() {
     // Enable the vertex array functionality
@@ -271,21 +246,68 @@ void init_camera() {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     // Define a 50 degree field of view, 1:1 aspect ratio, near and far planes at 3 and 7
-    gluPerspective(65.0, 1.0, 2.0, 30.0);
+    gluPerspective(80.0, 1.0, 2.0, 30.0);
     // Position camera at (2, 3, 5), attention at (0, 0, 0), up at (0, 1, 0)
     gluLookAt(4.0, 3.0, 6.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
 }
 
-////////////////////////////////////////////////////////////
-// Construct the scene using objects built from cubes/prisms
 vector<GLfloat> init_scene() {
     vector<GLfloat> scene;
+    vector<GLfloat> view;
+    view = to_homogeneous_coord(build_cube());
+    vector<GLfloat> cpu;
+    vector<GLfloat> keyboard;
+    vector<GLfloat> mouse;
+    vector<GLfloat> laptopScreen;
+    vector<GLfloat> laptopKeyboard;
+
+    ///transformations
+    cpu = mat_mult(scaling_matrix(3.0, 2.3, 0.2), view);
+    cpu = mat_mult(rotation_matrix_y(180), cpu);
+    cpu = mat_mult(translation_matrix(1.0, 1.75, 2.5), cpu);
+    
+    laptopScreen = mat_mult(scaling_matrix(2.3, 1.6, 0.1), view);
+    laptopScreen = mat_mult(translation_matrix(-3.3, -0.75, 1.5), laptopScreen);
+
+    laptopScreen = mat_mult(rotation_matrix_x(0), laptopScreen);
+    laptopScreen = mat_mult(rotation_matrix_y(40), laptopScreen);
   
+    
+    laptopKeyboard = mat_mult(scaling_matrix(2.3,1.6,0.1), view);
+    laptopKeyboard = mat_mult(translation_matrix(-3.3,0.75,1.5), laptopKeyboard);
+
+    laptopKeyboard = mat_mult(rotation_matrix_x(90), laptopKeyboard);
+      laptopKeyboard = mat_mult(rotation_matrix_y(40), laptopKeyboard);
+    
+    
+    
+    keyboard = mat_mult(scaling_matrix(2.5, 0.7, 0.2), view);
+    keyboard = mat_mult(rotation_matrix_y(180), keyboard);
+    keyboard = mat_mult(rotation_matrix_x(100), keyboard);
+    keyboard = mat_mult(translation_matrix(1.0, -0.25, 2.5), keyboard);
+    
+    mouse = mat_mult(scaling_matrix(0.5, 0.8, 0.5), view);
+    mouse = mat_mult(translation_matrix(-2.2,-2.25,2.5), mouse);
+    mouse = mat_mult(rotation_matrix_x(100), mouse);
+
+    mouse = mat_mult(rotation_matrix_y(180), mouse);
+   
+    cpu = to_cartesian_coord(cpu);
+    keyboard = to_cartesian_coord(keyboard);
+    mouse = to_cartesian_coord(mouse);
+    laptopScreen = to_cartesian_coord(laptopScreen);
+    laptopKeyboard = to_cartesian_coord(laptopKeyboard);
+   
+    scene.insert(scene.end(), cpu.begin(), cpu.end());
+    scene.insert(scene.end(), keyboard.begin(), keyboard.end());
+    scene.insert(scene.end(), mouse.begin(), mouse.end());
+    scene.insert(scene.end(), laptopScreen.begin(), laptopScreen.end());
+    scene.insert(scene.end(), laptopKeyboard.begin(), laptopKeyboard.end());
+ 
+    
     return scene;
 }
 
-////////////////////////////////////////////////////////////
-// Construct the color mapping of the scene
 vector<GLfloat> init_color(vector<GLfloat> scene) {
     vector<GLfloat> colors;
     for (int i = 0; i < scene.size(); i++) {
@@ -293,7 +315,6 @@ vector<GLfloat> init_color(vector<GLfloat> scene) {
     }
     return colors;
 }
-////////////////////////////////////////////////////////////
 
 void display_func() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -326,14 +347,14 @@ void display_func() {
                    pointColor);     // Pointer to memory location to read from
     
     // Draw quad point planes: each 4 vertices
-    glDrawArrays(GL_QUADS, 0, 4 * scene_size);
+    glDrawArrays(GL_QUADS, 0, 5 * scene_size);
     
     glFlush();            //Finish rendering
     glutSwapBuffers();
 }
 
 void idle_func() {
-    THETA = THETA + 0.03;
+    THETA = THETA + 0.02;
     display_func();
 }
 
@@ -341,7 +362,7 @@ int main (int argc, char **argv) {
     // Initialize GLUT
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
-    glutInitWindowSize(800, 600);
+    glutInitWindowSize(1000, 600);
     // Create a window with rendering context and everything else we need
     glutCreateWindow("Assignment 3");
     
