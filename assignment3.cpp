@@ -184,7 +184,67 @@ vector<GLfloat> mat_mult(vector<GLfloat> A, vector<GLfloat> B) {
 // Builds a unit cube centered at the origin
 vector<GLfloat> build_cube() {
     vector<GLfloat> result;
-
+    vector<GLfloat> cubePlane;
+    cubePlane = to_homogeneous_coord(init_plane());
+    
+    vector<GLfloat> cubeFace;
+    vector<GLfloat> cubeBack;
+    vector<GLfloat> cubeLeftSide;
+    vector<GLfloat> cubeRightSide;
+    vector<GLfloat> cubeHead;
+    vector<GLfloat> cubeGround;
+    
+    vector<GLfloat> insertFace;
+    vector<GLfloat> insertBack;
+    vector<GLfloat> insertLeftSide;
+    vector<GLfloat> insertRightSide;
+    vector<GLfloat> insertHead;
+    vector<GLfloat> insertGround;
+    
+    result.insert(result.end(), cubeFace.begin(), cubeFace.end());
+    result.insert(result.end(), cubeLeftSide.begin(), cubeLeftSide.end());
+    result.insert(result.end(), cubeRightSide.begin(), cubeRightSide.end());
+    result.insert(result.end(), cubeBack.begin(), cubeBack.end());
+    result.insert(result.end(), cubeHead.begin(), cubeHead.end());
+        result.insert(result.end(), cubeGround.begin(), cubeGround.end());
+    
+    
+    cubeFace = to_cartesian_coord(cubeFace);
+    cubeBack = to_cartesian_coord(cubeBack);
+    cubeLeftSide = to_cartesian_coord(cubeLeftSide);
+    cubeRightSide = to_cartesian_coord(cubeRightSide);
+    cubeHead = to_cartesian_coord(cubeHead);
+    cubeGround = to_cartesian_coord(cubeGround);
+    
+    
+//translations
+    cubeFace = mat_mult(translation_matrix(0,0,0.5), cubePlane);
+    cubeBack =
+        mat_mult(translation_matrix(0,0,0.5), cubeBack);
+    cubeLeftSide =
+    mat_mult(translation_matrix(-0.5,0,0), cubeLeftSide);
+    cubeRightSide =
+    mat_mult(translation_matrix(0.5,0,0), cubeRightSide);
+    cubeHead =
+    mat_mult(translation_matrix(0,0.5,0), cubeRightSide);
+    cubeGround =
+    mat_mult(translation_matrix(0,-0.5,0), cubeGround);
+    
+    //rotations
+    cubeBack =
+    mat_mult(rotation_matrix_y(180), cubePlane);
+    cubeLeftSide =
+    mat_mult(rotation_matrix_y(-90), cubePlane);
+    cubeRightSide =
+    mat_mult(rotation_matrix_y(90), cubePlane);
+    cubeHead =
+    mat_mult(rotation_matrix_y(-90), cubePlane);
+    cubeGround =
+    mat_mult(rotation_matrix_y(90), cubePlane);
+   
+    
+    
+    
     return result;
 }
 
@@ -242,7 +302,7 @@ void display_func() {
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     
-    int scene_size = SCENE.size()/16;    
+    int scene_size = SCENE.size()/16;
     //ROTATIONS
     vector<GLfloat> pointValues = to_homogeneous_coord(init_scene());
     pointValues = mat_mult(rotation_matrix_y(THETA), pointValues);
@@ -267,7 +327,7 @@ void display_func() {
     
     // Draw quad point planes: each 4 vertices
     glDrawArrays(GL_QUADS, 0, 4 * scene_size);
-    ///instead of scene_size you could use 60
+    
     glFlush();            //Finish rendering
     glutSwapBuffers();
 }
