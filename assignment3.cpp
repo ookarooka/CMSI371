@@ -39,6 +39,7 @@ float theta = 0.0;
 // Vector placeholders for the scene and color array
 vector<GLfloat> SCENE;
 vector<GLfloat> COLOR;
+
 // Converts degrees to radians for rotation
 float deg2rad(float d) {
     return (d*M_PI)/180.0;
@@ -254,9 +255,9 @@ void init_camera() {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     // Define a 50 degree field of view, 1:1 aspect ratio, near and far planes at 3 and 7
-    gluPerspective(50.0, 1.0, 2.0, 10.0);
+    gluPerspective(100.0, 1.0, 2.0, 30.0);
     // Position camera at (2, 3, 5), attention at (0, 0, 0), up at (0, 1, 0)
-    gluLookAt(2.0, 6.0, 5.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+    gluLookAt(4.0, 3.0, 6.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
 }
 
 ////////////////////////////////////////////////////////////
@@ -347,27 +348,27 @@ void display_func() {
     
     //ROTATIONS
     vector<GLfloat> pointValues = to_homogenous_coord(init_scene());
-    vector<GLfloat> xyzPoints;
-    vector<GLfloat> matValue;
-    vector<GLfloat> multResult;
-    SCENE = to_cartesian_coord(pointValues);
     pointValues = mat_mult(rotation_matrix_y(theta), pointValues);
+    SCENE = to_cartesian_coord(pointValues);
     
+    //vector<GLfloat> xyzPoints;
+    //vector<GLfloat> matValue;
+    //vector<GLfloat> multResult;
 
     
-    GLfloat* colorVertices = vector2array(COLOR);
-    GLfloat* sceneVertices = vector2array(SCENE);
+    GLfloat* pointColor = vector2array(COLOR);
+    GLfloat* pointScene = vector2array(SCENE);
     
     glVertexPointer(3,          // 3 components (x, y, z)
                     GL_FLOAT,   // Vertex type is GL_FLOAT
                     0,          // Start position in referenced memory
-                    sceneVertices);  // Pointer to memory location to read from
+                    pointScene);  // Pointer to memory location to read from
     
     //pass the color pointer
     glColorPointer(3,           // 3 components (r, g, b)
                    GL_FLOAT,    // Vertex type is GL_FLOAT
                    0,           // Start position in referenced memory
-                   colorVertices);     // Pointer to memory location to read from
+                   pointColor);     // Pointer to memory location to read from
     
     // Draw quad point planes: each 4 vertices
     glDrawArrays(GL_QUADS, 0, 4*6);
@@ -390,6 +391,8 @@ int main (int argc, char **argv) {
     
     setup();
     init_camera();
+    SCENE= init_scene();
+    COLOR = init_color(SCENE);
     
     // Set up our display function
     glutDisplayFunc(display_func);
