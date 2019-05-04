@@ -5,7 +5,9 @@
  
  Collaborators: Richardson, Alex
  
- Project Summary: Crated a rainbow themed version of my desktop, laptop, mouse and lamp using the build_cube() function to construct the scene. Added shadows through generating normals, defining base colors, creating a light source, and implementing a center of attention.
+ Project Summary: Crated a rainbow themed version of my desktop, laptop, 
+ mouse and lamp using the build_cube() function to construct the scene. Added shadows through
+ generating normals, defining base colors, creating a light source, and implementing a center of attention.
  ***/
 
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
